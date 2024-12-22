@@ -168,9 +168,7 @@ message(STATUS "OPENTELEMETRY_VERSION=${OPENTELEMETRY_VERSION}")
 
 option(WITH_NO_DEPRECATED_CODE "Do not include deprecated code" OFF)
 
-set(WITH_STL
-    "OFF"
-    CACHE STRING "Which version of the Standard Library for C++ to use")
+option(WITH_STL "Whether to use Standard Library for C++ latest features" OFF)
 
 option(WITH_GSL
        "Whether to use Guidelines Support Library for C++ latest features" OFF)
