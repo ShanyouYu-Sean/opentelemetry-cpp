@@ -87,12 +87,10 @@ public:
                   const opentelemetry::context::Context &context
                       OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
-#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kLong)
     {
       return;
     }
-#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -111,12 +109,10 @@ public:
                   const opentelemetry::context::Context &context
                       OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
-#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kLong)
     {
       return;
     }
-#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -157,12 +153,10 @@ public:
                     const opentelemetry::context::Context &context
                         OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
-#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kDouble)
     {
       return;
     }
-#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -181,12 +175,10 @@ public:
                     const opentelemetry::context::Context &context
                         OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
-#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kDouble)
     {
       return;
     }
-#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
