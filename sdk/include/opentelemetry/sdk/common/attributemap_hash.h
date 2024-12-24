@@ -69,14 +69,13 @@ inline size_t GetHashForAttributeMap(const OrderedAttributeMap &attribute_map)
 inline size_t GetHashForAttributeMap(const AttributeMap &attribute_map)
 #endif
 {
-  return 1;
-//  size_t seed = 0UL;
-//  for (auto &kv : attribute_map)
-//  {
-//    GetHash(seed, kv.first);
-//    nostd::visit(GetHashForAttributeValueVisitor(seed), kv.second);
-//  }
-//  return seed;
+  size_t seed = 0UL;
+  for (auto &kv : attribute_map)
+  {
+    GetHash(seed, kv.first);
+    nostd::visit(GetHashForAttributeValueVisitor(seed), kv.second);
+  }
+  return seed;
 }
 
 // Calculate hash of keys and values of KeyValueIterable, filtered using callback.
