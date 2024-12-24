@@ -14,7 +14,6 @@
 #include "opentelemetry/nostd/function_ref.h"
 #include "opentelemetry/sdk/common/attribute_utils.h"
 #include "opentelemetry/sdk/common/attributemap_hash.h"
-#include "opentelemetry/sdk/common/global_log_handler.h"
 #include "opentelemetry/sdk/metrics/aggregation/aggregation.h"
 #include "opentelemetry/sdk/metrics/view/attributes_processor.h"
 #include "opentelemetry/version.h"
@@ -109,7 +108,6 @@ public:
 
     if (IsOverflowAttributes())
     {
-      OTEL_INTERNAL_LOG_INFO("IsOverflowAttributes...");
       return GetOrSetOveflowAttributes(aggregation_callback);
     }
 
