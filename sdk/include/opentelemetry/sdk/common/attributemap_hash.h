@@ -63,7 +63,11 @@ struct GetHashForAttributeValueVisitor
 };
 
 // Calculate hash of keys and values of attribute map
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 inline size_t GetHashForAttributeMap(const OrderedAttributeMap &attribute_map)
+#else
+inline size_t GetHashForAttributeMap(const AttributeMap &attribute_map)
+#endif
 {
   size_t seed = 0UL;
   for (auto &kv : attribute_map)

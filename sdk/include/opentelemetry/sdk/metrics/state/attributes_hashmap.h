@@ -24,7 +24,11 @@ namespace sdk
 namespace metrics
 {
 
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 using opentelemetry::sdk::common::OrderedAttributeMap;
+#else
+using opentelemetry::sdk::common::AttributeMap;
+#endif
 
 constexpr size_t kAggregationCardinalityLimit = 2000;
 const std::string kAttributesLimitOverflowKey = "otel.metrics.overflow";
@@ -69,6 +73,7 @@ public:
    * If not present, it uses the provided callback to generate
    * value and store in the hash
    */
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
   Aggregation *GetOrSetDefault(const opentelemetry::common::KeyValueIterable &attributes,
                                const AttributesProcessor *attributes_processor,
                                std::function<std::unique_ptr<Aggregation>()> aggregation_callback,
@@ -90,6 +95,7 @@ public:
     hash_map_[hash] = {attr, aggregation_callback()};
     return hash_map_[hash].second.get();
   }
+#endif
 
   Aggregation *GetOrSetDefault(std::function<std::unique_ptr<Aggregation>()> aggregation_callback,
                                size_t hash)
@@ -134,6 +140,7 @@ public:
   /**
    * Set the value for given key, overwriting the value if already present
    */
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
   void Set(const opentelemetry::common::KeyValueIterable &attributes,
            const AttributesProcessor *attributes_processor,
            std::unique_ptr<Aggregation> aggr,
@@ -156,6 +163,7 @@ public:
       hash_map_[hash] = {attr, std::move(aggr)};
     }
   }
+#endif
 
   void Set(const MetricAttributes &attributes, std::unique_ptr<Aggregation> aggr, size_t hash)
   {
