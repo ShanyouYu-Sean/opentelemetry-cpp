@@ -17,7 +17,11 @@ namespace sdk
 namespace metrics
 {
 
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 using PointAttributes = opentelemetry::sdk::common::OrderedAttributeMap;
+#else
+using PointAttributes = opentelemetry::sdk::common::AttributeMap;
+#endif
 using PointType       = opentelemetry::nostd::
     variant<SumPointData, HistogramPointData, LastValuePointData, DropPointData>;
 
