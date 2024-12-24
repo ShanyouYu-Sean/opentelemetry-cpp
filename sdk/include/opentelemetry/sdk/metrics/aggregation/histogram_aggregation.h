@@ -49,7 +49,9 @@ public:
   PointType ToPoint() const noexcept override;
 
 private:
+#ifdef ENABLE_OTEL_LOCK
   mutable opentelemetry::common::SpinLockMutex lock_;
+#endif
   HistogramPointData point_data_;
   bool record_min_max_ = true;
 };
@@ -79,7 +81,9 @@ public:
   PointType ToPoint() const noexcept override;
 
 private:
+#ifdef ENABLE_OTEL_LOCK
   mutable opentelemetry::common::SpinLockMutex lock_;
+#endif
   mutable HistogramPointData point_data_;
   bool record_min_max_ = true;
 };

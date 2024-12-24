@@ -35,7 +35,9 @@ public:
   PointType ToPoint() const noexcept override;
 
 private:
+#ifdef ENABLE_OTEL_LOCK
   mutable opentelemetry::common::SpinLockMutex lock_;
+#endif
   LastValuePointData point_data_;
 };
 
@@ -57,7 +59,9 @@ public:
   PointType ToPoint() const noexcept override;
 
 private:
+#ifdef ENABLE_OTEL_LOCK
   mutable opentelemetry::common::SpinLockMutex lock_;
+#endif
   mutable LastValuePointData point_data_;
 };
 

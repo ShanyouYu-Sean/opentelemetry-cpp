@@ -37,7 +37,9 @@ LongLastValueAggregation::LongLastValueAggregation(const LastValuePointData &dat
 void LongLastValueAggregation::Aggregate(int64_t value,
                                          const PointAttributes & /* attributes */) noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.is_lastvalue_valid_ = true;
   point_data_.value_              = value;
   point_data_.sample_ts_          = std::chrono::system_clock::now();
@@ -76,7 +78,9 @@ std::unique_ptr<Aggregation> LongLastValueAggregation::Diff(const Aggregation &n
 
 PointType LongLastValueAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 
@@ -97,7 +101,9 @@ DoubleLastValueAggregation::DoubleLastValueAggregation(const LastValuePointData 
 void DoubleLastValueAggregation::Aggregate(double value,
                                            const PointAttributes & /* attributes */) noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.is_lastvalue_valid_ = true;
   point_data_.value_              = value;
   point_data_.sample_ts_          = std::chrono::system_clock::now();
@@ -137,7 +143,9 @@ std::unique_ptr<Aggregation> DoubleLastValueAggregation::Diff(
 
 PointType DoubleLastValueAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 }  // namespace metrics

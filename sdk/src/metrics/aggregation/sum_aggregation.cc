@@ -40,7 +40,9 @@ void LongSumAggregation::Aggregate(int64_t value, const PointAttributes & /* att
         << value);
     return;
   }
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.value_ = nostd::get<int64_t>(point_data_.value_) + value;
 }
 
@@ -70,7 +72,9 @@ std::unique_ptr<Aggregation> LongSumAggregation::Diff(const Aggregation &next) c
 
 PointType LongSumAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 
@@ -95,7 +99,9 @@ void DoubleSumAggregation::Aggregate(double value,
         << value);
     return;
   }
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.value_ = nostd::get<double>(point_data_.value_) + value;
 }
 
@@ -125,7 +131,9 @@ std::unique_ptr<Aggregation> DoubleSumAggregation::Diff(const Aggregation &next)
 
 PointType DoubleSumAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 

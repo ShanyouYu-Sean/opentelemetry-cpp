@@ -61,7 +61,9 @@ LongHistogramAggregation::LongHistogramAggregation(const HistogramPointData &dat
 void LongHistogramAggregation::Aggregate(int64_t value,
                                          const PointAttributes & /* attributes */) noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.count_ += 1;
   point_data_.sum_ = nostd::get<int64_t>(point_data_.sum_) + value;
   if (record_min_max_)
@@ -102,7 +104,9 @@ std::unique_ptr<Aggregation> LongHistogramAggregation::Diff(const Aggregation &n
 
 PointType LongHistogramAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 
@@ -141,7 +145,9 @@ DoubleHistogramAggregation::DoubleHistogramAggregation(const HistogramPointData 
 void DoubleHistogramAggregation::Aggregate(double value,
                                            const PointAttributes & /* attributes */) noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   point_data_.count_ += 1;
   point_data_.sum_ = nostd::get<double>(point_data_.sum_) + value;
   if (record_min_max_)
@@ -183,7 +189,9 @@ std::unique_ptr<Aggregation> DoubleHistogramAggregation::Diff(
 
 PointType DoubleHistogramAggregation::ToPoint() const noexcept
 {
+#ifdef ENABLE_OTEL_LOCK
   const std::lock_guard<opentelemetry::common::SpinLockMutex> locked(lock_);
+#endif
   return point_data_;
 }
 

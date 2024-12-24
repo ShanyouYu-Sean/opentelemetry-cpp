@@ -33,7 +33,9 @@ bool SyncMetricStorage::Collect(CollectorHandle *collector,
   // recordings
   std::shared_ptr<AttributesHashMap> delta_metrics = nullptr;
   {
-//    std::lock_guard<opentelemetry::common::SpinLockMutex> guard(attribute_hashmap_lock_);
+#ifdef ENABLE_OTEL_LOCK
+    std::lock_guard<opentelemetry::common::SpinLockMutex> guard(attribute_hashmap_lock_);
+#endif
     delta_metrics = std::move(attributes_hashmap_);
     attributes_hashmap_.reset(new AttributesHashMap);
   }
