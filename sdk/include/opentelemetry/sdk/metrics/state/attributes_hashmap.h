@@ -120,21 +120,21 @@ public:
                                std::function<std::unique_ptr<Aggregation>()> aggregation_callback,
                                size_t hash)
   {
-    auto it = hash_map_.find(hash);
-    if (it != hash_map_.end())
-    {
-      return it->second.second.get();
-    }
-
-    if (IsOverflowAttributes())
-    {
-      return GetOrSetOveflowAttributes(aggregation_callback);
-    }
-
-    MetricAttributes attr{attributes};
-
-    hash_map_[hash] = {attr, aggregation_callback()};
-    return hash_map_[hash].second.get();
+//    auto it = hash_map_.find(hash);
+//    if (it != hash_map_.end())
+//    {
+//      return it->second.second.get();
+//    }
+//
+//    if (IsOverflowAttributes())
+//    {
+//      return GetOrSetOveflowAttributes(aggregation_callback);
+//    }
+//
+//    MetricAttributes attr{attributes};
+//
+//    hash_map_[hash] = {attr, aggregation_callback()};
+    return aggregation_callback().get();
   }
 
   /**

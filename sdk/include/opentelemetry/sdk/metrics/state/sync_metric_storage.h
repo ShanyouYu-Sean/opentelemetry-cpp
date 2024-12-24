@@ -133,7 +133,7 @@ public:
           }
         });
 #else
-    auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(attributes);
+//    auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(attributes);
 #endif
 #ifdef ENABLE_OTEL_LOCK
     std::lock_guard<opentelemetry::common::SpinLockMutex> guard(attribute_hashmap_lock_);
@@ -143,9 +143,9 @@ public:
         ->GetOrSetDefault(attributes, attributes_processor_, create_default_aggregation_, hash)
         ->Aggregate(value);
 #else
-//    attributes_hashmap_
-//        ->GetOrSetDefault(attributes, create_default_aggregation_, hash)
-//        ->Aggregate(value);
+    attributes_hashmap_
+        ->GetOrSetDefault(attributes, create_default_aggregation_, 1)
+        ->Aggregate(value);
 #endif
   }
 
