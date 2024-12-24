@@ -67,7 +67,9 @@ public:
                     size_t attributes_limit = kAggregationCardinalityLimit)
       : instrument_descriptor_(instrument_descriptor),
         attributes_hashmap_(new AttributesHashMap(attributes_limit)),
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
         attributes_processor_(attributes_processor),
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
         exemplar_filter_type_(exempler_filter_type),
         exemplar_reservoir_(exemplar_reservoir),
@@ -85,10 +87,12 @@ public:
                   const opentelemetry::context::Context &context
                       OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
+#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kLong)
     {
       return;
     }
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -107,10 +111,12 @@ public:
                   const opentelemetry::context::Context &context
                       OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
+#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kLong)
     {
       return;
     }
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -118,6 +124,7 @@ public:
                                             std::chrono::system_clock::now());
     }
 #endif
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
     auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(
         attributes, [this](nostd::string_view key) {
           if (attributes_processor_)
@@ -129,22 +136,33 @@ public:
             return true;
           }
         });
+#else
+    auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(attributes);
+#endif
 #ifdef ENABLE_OTEL_LOCK
     std::lock_guard<opentelemetry::common::SpinLockMutex> guard(attribute_hashmap_lock_);
 #endif
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
     attributes_hashmap_
         ->GetOrSetDefault(attributes, attributes_processor_, create_default_aggregation_, hash)
         ->Aggregate(value);
+#else
+    attributes_hashmap_
+        ->GetOrSetDefault(attributes, create_default_aggregation_, hash)
+        ->Aggregate(value);
+#endif
   }
 
   void RecordDouble(double value,
                     const opentelemetry::context::Context &context
                         OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
+#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kDouble)
     {
       return;
     }
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -163,10 +181,12 @@ public:
                     const opentelemetry::context::Context &context
                         OPENTELEMETRY_MAYBE_UNUSED) noexcept override
   {
+#ifdef ENABLE_INSTRUMENT_VALUE_TYPE_CHECK
     if (instrument_descriptor_.value_type_ != InstrumentValueType::kDouble)
     {
       return;
     }
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
     if (EnableExamplarFilter(exemplar_filter_type_, context))
     {
@@ -174,6 +194,7 @@ public:
                                             std::chrono::system_clock::now());
     }
 #endif
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
     auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(
         attributes, [this](nostd::string_view key) {
           if (attributes_processor_)
@@ -185,12 +206,21 @@ public:
             return true;
           }
         });
+#else
+    auto hash = opentelemetry::sdk::common::GetHashForAttributeMap(attributes);
+#endif
 #ifdef ENABLE_OTEL_LOCK
     std::lock_guard<opentelemetry::common::SpinLockMutex> guard(attribute_hashmap_lock_);
 #endif
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
     attributes_hashmap_
         ->GetOrSetDefault(attributes, attributes_processor_, create_default_aggregation_, hash)
         ->Aggregate(value);
+#else
+    attributes_hashmap_
+        ->GetOrSetDefault(attributes, create_default_aggregation_, hash)
+        ->Aggregate(value);
+#endif
   }
 
   bool Collect(CollectorHandle *collector,
@@ -204,7 +234,9 @@ private:
   // hashmap to maintain the metrics for delta collection (i.e, collection since last Collect call)
   std::unique_ptr<AttributesHashMap> attributes_hashmap_;
   std::function<std::unique_ptr<Aggregation>()> create_default_aggregation_;
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
   const AttributesProcessor *attributes_processor_;
+#endif
 #ifdef ENABLE_METRICS_EXEMPLAR_PREVIEW
   ExemplarFilterType exemplar_filter_type_;
   nostd::shared_ptr<ExemplarReservoir> exemplar_reservoir_;
