@@ -9,6 +9,8 @@ namespace sdk
 {
 namespace metrics
 {
+
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 FilteredOrderedAttributeMap::FilteredOrderedAttributeMap(
     const opentelemetry::common::KeyValueIterable &attributes,
     const AttributesProcessor *processor)
@@ -38,6 +40,8 @@ FilteredOrderedAttributeMap::FilteredOrderedAttributeMap(
     }
   }
 }
+#endif
+
 }  // namespace metrics
 }  // namespace sdk
 OPENTELEMETRY_END_NAMESPACE

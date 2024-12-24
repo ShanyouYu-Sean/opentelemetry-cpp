@@ -18,7 +18,9 @@ namespace sdk
 {
 namespace metrics
 {
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 using MetricAttributes = opentelemetry::sdk::metrics::FilteredOrderedAttributeMap;
+#endif
 
 /**
  * The AttributesProcessor is responsible for customizing which
@@ -27,6 +29,7 @@ using MetricAttributes = opentelemetry::sdk::metrics::FilteredOrderedAttributeMa
 
 class AttributesProcessor
 {
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 public:
   // Process the metric instrument attributes.
   // @returns integer with individual bits set if they are to be filtered.
@@ -37,6 +40,7 @@ public:
   virtual bool isPresent(nostd::string_view key) const noexcept = 0;
 
   virtual ~AttributesProcessor() = default;
+#endif
 };
 
 /**
@@ -46,6 +50,7 @@ public:
 
 class DefaultAttributesProcessor : public AttributesProcessor
 {
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 public:
   MetricAttributes process(
       const opentelemetry::common::KeyValueIterable &attributes) const noexcept override
@@ -55,6 +60,7 @@ public:
   }
 
   bool isPresent(nostd::string_view /*key*/) const noexcept override { return true; }
+#endif
 };
 
 /**
@@ -64,6 +70,7 @@ public:
 
 class FilteringAttributesProcessor : public AttributesProcessor
 {
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 public:
   FilteringAttributesProcessor(
       const std::unordered_map<std::string, bool> allowed_attribute_keys = {})
@@ -93,8 +100,10 @@ public:
 
 private:
   std::unordered_map<std::string, bool> allowed_attribute_keys_;
+#endif
 };
 
 }  // namespace metrics
 }  // namespace sdk
 OPENTELEMETRY_END_NAMESPACE
+

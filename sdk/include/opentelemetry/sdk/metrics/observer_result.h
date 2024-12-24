@@ -30,13 +30,22 @@ public:
 
   void Observe(T value) noexcept override
   {
-    data_[MetricAttributes{{}, attributes_processor_}] = value;
+    data_[MetricAttributes{
+        {},
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
+        attributes_processor_
+#endif
+    }] = value;
   }
 
   void Observe(T value, const opentelemetry::common::KeyValueIterable &attributes) noexcept override
   {
-    data_[MetricAttributes{attributes, attributes_processor_}] =
-        value;  // overwrites the previous value if present
+    data_[MetricAttributes{
+        attributes,
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
+        attributes_processor_
+#endif
+    }] = value;  // overwrites the previous value if present
   }
 
   const std::unordered_map<MetricAttributes, T, AttributeHashGenerator> &GetMeasurements()

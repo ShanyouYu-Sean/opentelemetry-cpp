@@ -21,6 +21,7 @@ class AttributesProcessor;  // IWYU pragma: keep
 
 class FilteredOrderedAttributeMap : public opentelemetry::sdk::common::OrderedAttributeMap
 {
+#ifdef ENABLE_ATTRIBUTES_PROCESSOR
 public:
   FilteredOrderedAttributeMap() = default;
   FilteredOrderedAttributeMap(
@@ -37,6 +38,7 @@ public:
       std::initializer_list<std::pair<nostd::string_view, opentelemetry::common::AttributeValue>>
           attributes,
       const opentelemetry::sdk::metrics::AttributesProcessor *processor);
+#endif
 };
 }  // namespace metrics
 }  // namespace sdk
