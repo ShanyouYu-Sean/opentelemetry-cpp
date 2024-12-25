@@ -54,31 +54,6 @@ inline size_t Fnv1aHash(const T& obj)
   return Fnv1aHash(oss.str());
 }
 
-// 特化版本：对于基础类型，直接调用 Fnv1a 哈希
-template <>
-inline size_t Fnv1aHash(const bool& val)
-{
-  return Fnv1aHash(val ? "true" : "false");
-}
-
-template <>
-inline size_t Fnv1aHash(const int32_t& val)
-{
-  return Fnv1aHash(std::to_string(val));
-}
-
-template <>
-inline size_t Fnv1aHash(const uint32_t& val)
-{
-  return Fnv1aHash(std::to_string(val));
-}
-
-template <>
-inline size_t Fnv1aHash(const double& val)
-{
-  return Fnv1aHash(std::to_string(val));
-}
-
 template <class T>
 inline void GetHash(size_t &seed, const T &arg)
 {
@@ -96,6 +71,7 @@ inline void GetHash(size_t &seed, const std::vector<T> &arg)
 }
 
 // Specialization for const char*
+// this creates an intermediate string.
 template <>
 inline void GetHash<const char *>(size_t &seed, const char *const &arg)
 {
