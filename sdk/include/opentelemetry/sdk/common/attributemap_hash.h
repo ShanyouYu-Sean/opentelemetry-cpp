@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+#include <cstring>
 
 #include "opentelemetry/common/attribute_value.h"
 #include "opentelemetry/common/key_value_iterable.h"
