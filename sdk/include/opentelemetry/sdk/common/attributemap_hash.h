@@ -24,31 +24,82 @@ namespace sdk
 namespace common
 {
 
+// FNV-1a 哈希常量
+constexpr uint64_t FNV_OFFSET_BASIS = 14695981039346656037U;
+constexpr uint64_t FNV_64_PRIME = 1099511628211U;
+
+// FNV-1a 哈希实现
+inline size_t Fnv1aHash(const char* data, size_t length)
+{
+  uint64_t hash = FNV_OFFSET_BASIS;
+  for (size_t i = 0; i < length; ++i)
+  {
+    hash ^= static_cast<unsigned char>(data[i]);
+    hash *= FNV_64_PRIME;
+  }
+  return static_cast<size_t>(hash);
+}
+
+inline size_t Fnv1aHash(const std::string& str)
+{
+  return Fnv1aHash(str.data(), str.size());
+}
+
+// 允许接受任意类型的 Fnv1a 哈希函数
+template <typename T>
+inline size_t Fnv1aHash(const T& obj)
+{
+  std::ostringstream oss;
+  oss << obj;
+  return Fnv1aHash(oss.str());
+}
+
+// 特化版本：对于基础类型，直接调用 Fnv1a 哈希
+template <>
+inline size_t Fnv1aHash(const bool& val)
+{
+  return Fnv1aHash(val ? "true" : "false");
+}
+
+template <>
+inline size_t Fnv1aHash(const int32_t& val)
+{
+  return Fnv1aHash(std::to_string(val));
+}
+
+template <>
+inline size_t Fnv1aHash(const uint32_t& val)
+{
+  return Fnv1aHash(std::to_string(val));
+}
+
+template <>
+inline size_t Fnv1aHash(const double& val)
+{
+  return Fnv1aHash(std::to_string(val));
+}
+
 template <class T>
 inline void GetHash(size_t &seed, const T &arg)
 {
-  std::hash<T> hasher;
-  // reference -
-  // https://www.boost.org/doc/libs/1_37_0/doc/html/hash/reference.html#boost.hash_combine
-  seed ^= hasher(arg) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  // FNV-1a 哈希
+  seed ^= Fnv1aHash(arg) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 template <class T>
 inline void GetHash(size_t &seed, const std::vector<T> &arg)
 {
-  for (auto v : arg)
+  for (const auto& v : arg)
   {
     GetHash<T>(seed, v);
   }
 }
 
 // Specialization for const char*
-// this creates an intermediate string.
 template <>
 inline void GetHash<const char *>(size_t &seed, const char *const &arg)
 {
-  std::hash<std::string> hasher;
-  seed ^= hasher(std::string(arg)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+  seed ^= Fnv1aHash(arg, std::strlen(arg)) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 struct GetHashForAttributeValueVisitor
@@ -102,8 +153,7 @@ inline size_t GetHashForAttributeMap(
 template <class T>
 inline size_t GetHash(T value)
 {
-  std::hash<T> hasher;
-  return hasher(value);
+  return Fnv1aHash(std::to_string(value));
 }
 
 }  // namespace common
