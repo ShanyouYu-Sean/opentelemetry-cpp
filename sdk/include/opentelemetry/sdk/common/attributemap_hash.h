@@ -129,7 +129,7 @@ inline size_t GetHashForAttributeMap(
 template <class T>
 inline size_t GetHash(T value)
 {
-  return Fnv1aHash(std::to_string(value));
+  return Fnv1aHash(value);
 }
 
 }  // namespace common
