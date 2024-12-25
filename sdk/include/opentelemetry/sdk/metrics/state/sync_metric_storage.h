@@ -144,7 +144,7 @@ public:
         ->Aggregate(value);
 #else
     attributes_hashmap_
-        ->GetOrSetDefault(attributes, create_default_aggregation_, 1);
+        ->GetOrSetDefault(attributes, create_default_aggregation_, hash);
 //        ->Aggregate(value);
 #endif
   }
