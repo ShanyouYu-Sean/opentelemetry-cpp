@@ -55,6 +55,12 @@ inline size_t Fnv1aHash(const T& obj)
   return Fnv1aHash(oss.str());
 }
 
+void GetHash(size_t &seed, const std::string& arg)
+{
+  // FNV-1a 哈希
+  seed ^= Fnv1aHash(arg) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
 template <class T>
 inline void GetHash(size_t &seed, const T &arg)
 {
@@ -91,17 +97,23 @@ struct GetHashForAttributeValueVisitor
 };
 
 // Calculate hash of keys and values of attribute map
-#ifdef ENABLE_ATTRIBUTES_PROCESSOR
+#if defined(ENABLE_ATTRIBUTES_PROCESSOR)
 inline size_t GetHashForAttributeMap(const OrderedAttributeMap &attribute_map)
-#else
+#elif defined(ENABLE_GENERIC_ATTRIBUTES)
 inline size_t GetHashForAttributeMap(const AttributeMap &attribute_map)
+#else
+inline size_t GetHashForAttributeMap(const StringAttributeMap &attribute_map)
 #endif
 {
   size_t seed = 0UL;
   for (auto &kv : attribute_map)
   {
     GetHash(seed, kv.first);
+#if defined(ENABLE_GENERIC_ATTRIBUTES)
     nostd::visit(GetHashForAttributeValueVisitor(seed), kv.second);
+#else
+    GetHash(seed, kv.second);
+#endif
   }
   return seed;
 }

@@ -24,18 +24,26 @@ namespace sdk
 namespace metrics
 {
 
-#ifdef ENABLE_ATTRIBUTES_PROCESSOR
+#if defined(ENABLE_ATTRIBUTES_PROCESSOR)
 using opentelemetry::sdk::common::OrderedAttributeMap;
-#else
+#elif defined(ENABLE_GENERIC_ATTRIBUTES)
 using opentelemetry::sdk::common::AttributeMap;
+#else
+using opentelemetry::sdk::common::StringAttributeMap;
 #endif
 
 constexpr size_t kAggregationCardinalityLimit = 20000;
 const std::string kAttributesLimitOverflowKey = "otel.metrics.overflow";
 const bool kAttributesLimitOverflowValue      = true;
+#if defined(ENABLE_GENERIC_ATTRIBUTES)
 const size_t kOverflowAttributesHash          = opentelemetry::sdk::common::GetHashForAttributeMap(
     {{kAttributesLimitOverflowKey,
                kAttributesLimitOverflowValue}});  // precalculated for optimization
+#else
+const size_t kOverflowAttributesHash          = opentelemetry::sdk::common::GetHashForAttributeMap(
+    {{kAttributesLimitOverflowKey,
+               kAttributesLimitOverflowValue ? "true" : "false"}});  // precalculated for optimization
+#endif
 
 class AttributeHashGenerator
 {
@@ -175,7 +183,11 @@ public:
     else if (IsOverflowAttributes())
     {
       hash_map_[kOverflowAttributesHash] = {
+#if defined(ENABLE_GENERIC_ATTRIBUTES)
           MetricAttributes{{kAttributesLimitOverflowKey, kAttributesLimitOverflowValue}},
+#else
+          MetricAttributes{{kAttributesLimitOverflowKey, kAttributesLimitOverflowValue ? "true" : "false"}},
+#endif
           std::move(aggr)};
     }
     else
@@ -224,7 +236,11 @@ private:
       return it->second.second.get();
     }
 
+#if defined(ENABLE_GENERIC_ATTRIBUTES)
     MetricAttributes attr{{kAttributesLimitOverflowKey, kAttributesLimitOverflowValue}};
+#else
+    MetricAttributes attr{{kAttributesLimitOverflowKey, kAttributesLimitOverflowValue ? "true" : "false"}};
+#endif
     hash_map_[kOverflowAttributesHash] = {attr, std::move(agg)};
     return hash_map_[kOverflowAttributesHash].second.get();
   }

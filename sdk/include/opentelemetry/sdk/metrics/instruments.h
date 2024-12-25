@@ -64,11 +64,12 @@ struct InstrumentDescriptor
   InstrumentValueType value_type_;
 };
 
-#ifdef ENABLE_ATTRIBUTES_PROCESSOR
+#if defined(ENABLE_ATTRIBUTES_PROCESSOR)
 using MetricAttributes               = opentelemetry::sdk::metrics::FilteredOrderedAttributeMap;
-#else
+#elif defined(ENABLE_GENERIC_ATTRIBUTES)
 using MetricAttributes               = opentelemetry::sdk::common::AttributeMap;
-
+#else
+using MetricAttributes               = opentelemetry::sdk::common::StringAttributeMap;
 #endif
 using AggregationTemporalitySelector = std::function<AggregationTemporality(InstrumentType)>;
 
